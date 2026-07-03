@@ -1,0 +1,32 @@
+[
+  {
+    "id": "1782633876394",
+    "name": "qwerty",
+    "vehicle_price": 2000000,
+    "down_payment": 600000,
+    "loan_tenure": 7,
+    "interest_rate": 0.09,
+    "lump_sum": 4000000,
+    "expected_return": 0.12,
+    "swp_amount": 22524.70956405384,
+    "swp_start_month": 3,
+    "fund_type": "Equity MF",
+    "emi_start_month": "2026-07",
+    "created_at": "2026-06-28T08:04:36.394Z"
+  },
+  {
+    "id": "1782635400318",
+    "name": "audi",
+    "vehicle_price": 4000000,
+    "down_payment": 1100000,
+    "loan_tenure": 7,
+    "interest_rate": 0.08,
+    "lump_sum": 4000000,
+    "expected_return": 0.12,
+    "swp_amount": 45200.021767742015,
+    "swp_start_month": 3,
+    "fund_type": "Hybrid MF",
+    "emi_start_month": "2026-08",
+    "created_at": "2026-06-28T08:30:00.318Z"
+  }
+]
