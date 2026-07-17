@@ -3,7 +3,7 @@ import { runCalculations, formatINR, formatNumber } from './utils';
 import StrategyCharts from './components/StrategyCharts';
 import './App.css';
 
-const API_BASE = 'http://localhost:5000/api';
+const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
 
 export default function App() {
   // Calculator inputs state (with default values matching Excel)
@@ -23,17 +23,17 @@ export default function App() {
 
   const [activeTab, setActiveTab] = useState('home');
   const [activeChart, setActiveChart] = useState('balances');
-  
+
   // Database scenarios state
   const [savedScenarios, setSavedScenarios] = useState([]);
   const [showSaveModal, setShowSaveModal] = useState(false);
   const [newScenarioName, setNewScenarioName] = useState('');
   const [isLoadingSaved, setIsLoadingSaved] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
-  
+
   // PDF download loading state
   const [exportPdfLoading, setExportPdfLoading] = useState(false);
-  
+
   // Mock rates state
   const [marketRates, setMarketRates] = useState(null);
 
@@ -92,7 +92,7 @@ export default function App() {
   const handleInputChange = (field, value) => {
     setInputs(prev => {
       const newInputs = { ...prev, [field]: value };
-      
+
       // Validation: Down payment cannot exceed vehicle price
       if (field === 'vehicle_price' && prev.down_payment > value) {
         newInputs.down_payment = value;
@@ -215,7 +215,7 @@ export default function App() {
   const handleExportCSV = () => {
     let csvContent = 'data:text/csv;charset=utf-8,';
     csvContent += 'Month #,Month,Opening Loan Bal,EMI Paid,Principal Component,Interest Component,Closing Loan Bal,Investment Balance,SWP Withdrawn,Net Cash Flow,% Repaid\n';
-    
+
     schedule.forEach(r => {
       csvContent += `${r.index},${r.month},${Math.round(r.openingLoanBal)},${Math.round(r.emiPaid)},${Math.round(r.principalComp)},${Math.round(r.interestComp)},${Math.round(r.closingLoanBal)},${Math.round(r.openingInvBal)},${Math.round(r.swpWithdrawn)},${Math.round(r.netCashFlow)},${(r.percentLoanRepaid * 100).toFixed(1)}%\n`;
     });
@@ -230,8 +230,8 @@ export default function App() {
   };
 
   // Filter schedule based on search query (by month name, e.g. "Jun-26")
-  const filteredSchedule = schedule.filter(d => 
-    d.month.toLowerCase().includes(searchQuery.toLowerCase()) || 
+  const filteredSchedule = schedule.filter(d =>
+    d.month.toLowerCase().includes(searchQuery.toLowerCase()) ||
     d.index.toString() === searchQuery
   );
 
@@ -259,18 +259,18 @@ export default function App() {
         {/* Inputs Group 1: Car Loan */}
         <div className="control-group">
           <h2 className="control-section-title">🚗 Car Loan Parameters</h2>
-          
+
           <div className="input-field">
             <div className="input-header">
               <label>On-Road Car Price</label>
               <span className="input-val-badge">{formatINR(inputs.vehicle_price)}</span>
             </div>
-            <input 
-              type="range" 
-              min={500000} 
-              max={15000000} 
-              step={100000} 
-              value={inputs.vehicle_price} 
+            <input
+              type="range"
+              min={500000}
+              max={15000000}
+              step={100000}
+              value={inputs.vehicle_price}
               onChange={(e) => handleInputChange('vehicle_price', Number(e.target.value))}
             />
           </div>
@@ -280,12 +280,12 @@ export default function App() {
               <label>Down Payment</label>
               <span className="input-val-badge">{formatINR(inputs.down_payment)}</span>
             </div>
-            <input 
-              type="range" 
-              min={0} 
-              max={inputs.vehicle_price} 
-              step={50000} 
-              value={inputs.down_payment} 
+            <input
+              type="range"
+              min={0}
+              max={inputs.vehicle_price}
+              step={50000}
+              value={inputs.down_payment}
               onChange={(e) => handleInputChange('down_payment', Number(e.target.value))}
             />
           </div>
@@ -295,8 +295,8 @@ export default function App() {
               <label>Loan Tenure (Years)</label>
               <span className="input-val-badge">{inputs.loan_tenure} Years</span>
             </div>
-            <select 
-              value={inputs.loan_tenure} 
+            <select
+              value={inputs.loan_tenure}
               onChange={(e) => handleInputChange('loan_tenure', Number(e.target.value))}
             >
               {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map(yr => (
@@ -310,12 +310,12 @@ export default function App() {
               <label>Annual Interest Rate (p.a.)</label>
               <span className="input-val-badge">{(inputs.interest_rate * 100).toFixed(2)}%</span>
             </div>
-            <input 
-              type="range" 
-              min={0.05} 
-              max={0.20} 
-              step={0.001} 
-              value={inputs.interest_rate} 
+            <input
+              type="range"
+              min={0.05}
+              max={0.20}
+              step={0.001}
+              value={inputs.interest_rate}
               onChange={(e) => handleInputChange('interest_rate', Number(e.target.value))}
             />
           </div>
@@ -324,9 +324,9 @@ export default function App() {
             <div className="input-header">
               <label>Disbursement Month</label>
             </div>
-            <input 
-              type="month" 
-              value={inputs.emi_start_month} 
+            <input
+              type="month"
+              value={inputs.emi_start_month}
               onChange={(e) => handleInputChange('emi_start_month', e.target.value)}
             />
           </div>
@@ -341,12 +341,12 @@ export default function App() {
               <label>Lump Sum Corpus</label>
               <span className="input-val-badge">{formatINR(inputs.lump_sum)}</span>
             </div>
-            <input 
-              type="range" 
-              min={100000} 
-              max={20000000} 
-              step={100000} 
-              value={inputs.lump_sum} 
+            <input
+              type="range"
+              min={100000}
+              max={20000000}
+              step={100000}
+              value={inputs.lump_sum}
               onChange={(e) => handleInputChange('lump_sum', Number(e.target.value))}
             />
           </div>
@@ -356,12 +356,12 @@ export default function App() {
               <label>Expected Return Rate</label>
               <span className="input-val-badge">{(inputs.expected_return * 100).toFixed(2)}%</span>
             </div>
-            <input 
-              type="range" 
-              min={0.05} 
-              max={0.25} 
-              step={0.005} 
-              value={inputs.expected_return} 
+            <input
+              type="range"
+              min={0.05}
+              max={0.25}
+              step={0.005}
+              value={inputs.expected_return}
               onChange={(e) => handleInputChange('expected_return', Number(e.target.value))}
             />
           </div>
@@ -371,20 +371,20 @@ export default function App() {
               <label>Monthly SWP Amount</label>
               <span className="input-val-badge">{formatINR(inputs.swp_amount)}</span>
             </div>
-            <input 
-              type="range" 
-              min={1000} 
-              max={250000} 
-              step={1000} 
-              value={inputs.swp_amount} 
+            <input
+              type="range"
+              min={1000}
+              max={250000}
+              step={1000}
+              value={inputs.swp_amount}
               disabled={inputs.isAutoLinked}
               onChange={(e) => handleInputChange('swp_amount', Number(e.target.value))}
             />
             <div className="checkbox-row">
-              <input 
-                type="checkbox" 
-                id="autolink-emi" 
-                checked={inputs.isAutoLinked} 
+              <input
+                type="checkbox"
+                id="autolink-emi"
+                checked={inputs.isAutoLinked}
                 onChange={(e) => handleInputChange('isAutoLinked', e.target.checked)}
               />
               <label htmlFor="autolink-emi">Auto-link SWP withdrawal to Monthly EMI</label>
@@ -396,12 +396,12 @@ export default function App() {
               <label>SWP Start Month</label>
               <span className="input-val-badge">Month {inputs.swp_start_month}</span>
             </div>
-            <input 
-              type="range" 
-              min={1} 
-              max={12} 
-              step={1} 
-              value={inputs.swp_start_month} 
+            <input
+              type="range"
+              min={1}
+              max={12}
+              step={1}
+              value={inputs.swp_start_month}
               onChange={(e) => handleInputChange('swp_start_month', Number(e.target.value))}
             />
           </div>
@@ -410,8 +410,8 @@ export default function App() {
             <div className="input-header">
               <label>Investment Fund Type</label>
             </div>
-            <select 
-              value={inputs.fund_type} 
+            <select
+              value={inputs.fund_type}
               onChange={(e) => handleInputChange('fund_type', e.target.value)}
             >
               <option value="Equity MF">Equity MF (Large/Mid Cap)</option>
@@ -427,7 +427,7 @@ export default function App() {
           <button className="btn-save-scenario" onClick={() => setShowSaveModal(true)}>
             💾 Save Current Scenario
           </button>
-          
+
           <h2 className="control-section-title" style={{ marginTop: '12px' }}>📁 Saved Calculations</h2>
           {isLoadingSaved ? (
             <span style={{ fontSize: '12px', color: 'var(--color-text-muted)' }}>Loading scenarios...</span>
@@ -476,21 +476,21 @@ export default function App() {
 
         {/* TAB CONTENTS */}
         <section className="tab-content">
-          
+
           {/* TAB 1: HOME */}
           {activeTab === 'home' && (
             <div style={{ display: 'flex', flexDirection: 'column', gap: '28px' }}>
               <div className="welcome-banner">
                 <h2>Optimize Your Net Worth With Smart SWP Strategy</h2>
                 <p>
-                  Instead of buying a vehicle fully in cash or taking a standalone high-EMI car loan, 
-                  Indian investors leverage a <strong>Systematic Withdrawal Plan (SWP)</strong>. 
-                  By investing the equivalent capital into an equity/hybrid fund and paying the EMI via SWP, 
+                  Instead of buying a vehicle fully in cash or taking a standalone high-EMI car loan,
+                  Indian investors leverage a <strong>Systematic Withdrawal Plan (SWP)</strong>.
+                  By investing the equivalent capital into an equity/hybrid fund and paying the EMI via SWP,
                   your money compounds in the market while the asset gets paid off!
                 </p>
-                <button 
-                  onClick={() => setActiveTab('dashboard')} 
-                  className="btn-export primary" 
+                <button
+                  onClick={() => setActiveTab('dashboard')}
+                  className="btn-export primary"
                   style={{ marginTop: '20px', padding: '10px 20px' }}
                 >
                   🚀 Launch Live Dashboard
@@ -671,14 +671,14 @@ export default function App() {
           {activeTab === 'amortisation' && (
             <div className="table-container">
               <div className="table-header-controls">
-                <input 
-                  type="text" 
+                <input
+                  type="text"
                   className="table-search-input"
-                  placeholder="🔍 Search month (e.g. Jun-26)..." 
+                  placeholder="🔍 Search month (e.g. Jun-26)..."
                   value={searchQuery}
                   onChange={(e) => { setSearchQuery(e.target.value); setTablePage(1); }}
                 />
-                
+
                 <div style={{ display: 'flex', gap: '10px' }}>
                   <button onClick={handleExportCSV} className="btn-export">
                     📄 Export to CSV
@@ -741,16 +741,16 @@ export default function App() {
                 <div className="pagination">
                   <span>Page {tablePage} of {totalPages} (Showing {displayedSchedule.length} rows)</span>
                   <div className="pagination-btn-group">
-                    <button 
-                      className="btn-page" 
-                      disabled={tablePage === 1} 
+                    <button
+                      className="btn-page"
+                      disabled={tablePage === 1}
                       onClick={() => setTablePage(p => p - 1)}
                     >
                       ◀ Previous
                     </button>
-                    <button 
-                      className="btn-page" 
-                      disabled={tablePage === totalPages} 
+                    <button
+                      className="btn-page"
+                      disabled={tablePage === totalPages}
                       onClick={() => setTablePage(p => p + 1)}
                     >
                       Next ▶
@@ -765,19 +765,19 @@ export default function App() {
           {activeTab === 'charts' && (
             <div>
               <div style={{ display: 'flex', gap: '10px', marginBottom: '20px' }}>
-                <button 
+                <button
                   className={`btn-export ${activeChart === 'balances' ? 'primary' : ''}`}
                   onClick={() => setActiveChart('balances')}
                 >
                   📉 Loan Balance vs Investment
                 </button>
-                <button 
+                <button
                   className={`btn-export ${activeChart === 'composition' ? 'primary' : ''}`}
                   onClick={() => setActiveChart('composition')}
                 >
                   📊 EMI Composition (P vs I)
                 </button>
-                <button 
+                <button
                   className={`btn-export ${activeChart === 'cashflow' ? 'primary' : ''}`}
                   onClick={() => setActiveChart('cashflow')}
                 >
@@ -794,7 +794,7 @@ export default function App() {
           {/* TAB 5: SCENARIOS */}
           {activeTab === 'scenarios' && (
             <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
-              
+
               {/* Break-even banner */}
               <div className="verdict-box excellent" style={{ borderLeftColor: 'var(--color-accent)' }}>
                 <span className="verdict-title" style={{ color: 'var(--color-accent)' }}>🎯 Break-Even Analysis</span>
@@ -831,18 +831,18 @@ export default function App() {
                       const isLoss = sc.netGainLoss < 0;
                       const isDepleted = sc.corpusRemaining.includes('Depleted');
                       return (
-                        <tr key={idx} style={{ 
+                        <tr key={idx} style={{
                           borderLeft: Math.round(inputs.expected_return * 100) === Math.round(sc.annualReturn * 100)
-                            ? '3px solid var(--color-accent)' 
+                            ? '3px solid var(--color-accent)'
                             : 'none'
                         }}>
                           <td><strong>{sc.annualReturnPercentStr}</strong></td>
                           <td>{formatNumber(sc.finalInvBalance)}</td>
                           <td>{formatNumber(sc.totalEMIPaid)}</td>
                           <td>{formatNumber(sc.totalSWPDrawn)}</td>
-                          <td style={{ 
-                            color: isLoss ? 'var(--color-error)' : 'var(--color-success)', 
-                            fontWeight: '600' 
+                          <td style={{
+                            color: isLoss ? 'var(--color-error)' : 'var(--color-success)',
+                            fontWeight: '600'
                           }}>
                             {isLoss ? '-' : '+'}{formatNumber(Math.abs(sc.netGainLoss))}
                           </td>
@@ -874,8 +874,8 @@ export default function App() {
                 <div className="tip-content">
                   <h4 className="tip-title">Fund Selection (SWP)</h4>
                   <p className="tip-text">
-                    For active SWPs, choose stable, large-cap equity mutual funds or balanced hybrid funds 
-                    offering steady 12-14% long-term historical returns. Avoid volatile small-cap/mid-cap funds for active SWP 
+                    For active SWPs, choose stable, large-cap equity mutual funds or balanced hybrid funds
+                    offering steady 12-14% long-term historical returns. Avoid volatile small-cap/mid-cap funds for active SWP
                     to protect against sequence-of-returns risk.
                   </p>
                 </div>
@@ -886,7 +886,7 @@ export default function App() {
                 <div className="tip-content">
                   <h4 className="tip-title">SEBI Guidelines</h4>
                   <p className="tip-text">
-                    Under SEBI mandates, the minimum monthly SWP payout is typically ₹500. Most Asset Management 
+                    Under SEBI mandates, the minimum monthly SWP payout is typically ₹500. Most Asset Management
                     Companies (AMCs) support monthly, quarterly, or half-yearly withdrawal schedules.
                   </p>
                 </div>
@@ -897,7 +897,7 @@ export default function App() {
                 <div className="tip-content">
                   <h4 className="tip-title">Indian Taxation Hack</h4>
                   <p className="tip-text">
-                    Long Term Capital Gains (LTCG) on equity mutual fund SWPs is taxed at 10% on gains exceeding 
+                    Long Term Capital Gains (LTCG) on equity mutual fund SWPs is taxed at 10% on gains exceeding
                     ₹1 lakh per year. Short Term Capital Gains (STCG) (within 1 year of unit purchase) is taxed at 15%.
                   </p>
                 </div>
@@ -908,7 +908,7 @@ export default function App() {
                 <div className="tip-content">
                   <h4 className="tip-title">Dealer Price Negotiations</h4>
                   <p className="tip-text">
-                    Always negotiate the final on-road price of the car BEFORE disclosing your financing method. 
+                    Always negotiate the final on-road price of the car BEFORE disclosing your financing method.
                     Dealers frequently inflate prices or add high commissions to loans they broker themselves.
                   </p>
                 </div>
@@ -919,7 +919,7 @@ export default function App() {
                 <div className="tip-content">
                   <h4 className="tip-title">CAGR vs Reality</h4>
                   <p className="tip-text">
-                    While the Indian Nifty 50 has returned a 12-13% CAGR over the last 15-20 years, stock markets 
+                    While the Indian Nifty 50 has returned a 12-13% CAGR over the last 15-20 years, stock markets
                     do not move in a straight line. Prepare for down years by maintaining a debt buffer.
                   </p>
                 </div>
@@ -930,7 +930,7 @@ export default function App() {
                 <div className="tip-content">
                   <h4 className="tip-title">Risk Buffer Emergency Fund</h4>
                   <p className="tip-text">
-                    Always keep at least 6 months of loan EMIs in a liquid savings account or liquid fund. 
+                    Always keep at least 6 months of loan EMIs in a liquid savings account or liquid fund.
                     This buffers you against potential SWP halts or market downturns.
                   </p>
                 </div>
@@ -948,9 +948,9 @@ export default function App() {
             <span className="modal-title">💾 Save Scenario</span>
             <div className="input-field">
               <label>Scenario Name</label>
-              <input 
-                type="text" 
-                placeholder="e.g. Fortuner Loan vs Nifty SWP" 
+              <input
+                type="text"
+                placeholder="e.g. Fortuner Loan vs Nifty SWP"
                 value={newScenarioName}
                 onChange={(e) => setNewScenarioName(e.target.value)}
               />
@@ -959,8 +959,8 @@ export default function App() {
               <button className="btn-export" onClick={() => setShowSaveModal(false)}>
                 Cancel
               </button>
-              <button 
-                className="btn-export primary" 
+              <button
+                className="btn-export primary"
                 onClick={handleSaveScenario}
                 disabled={isSaving || !newScenarioName.trim()}
               >

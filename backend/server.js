@@ -264,6 +264,11 @@ app.post('/api/export-pdf', (req, res) => {
 });
 
 // Start Server
+// Auth routes
+const authRouter = require('./auth');
+app.use('/api/auth', authRouter);
+
+// Start Server
 app.listen(PORT, () => {
   console.log(`Backend Server running on port ${PORT}`);
 });

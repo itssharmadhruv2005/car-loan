@@ -55,6 +55,47 @@ function createTableSQLite() {
       setupFallback();
     }
   });
+  // Users table for authentication
+  const userQuery = `
+    CREATE TABLE IF NOT EXISTS users (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      name TEXT,
+      phone TEXT,
+      email TEXT UNIQUE NOT NULL,
+      password_hash TEXT NOT NULL,
+      created_at TEXT DEFAULT (datetime('now'))
+    )
+  `;
+  db.run(userQuery, (err) => {
+    if (err) {
+      console.error('Error creating users table.', err);
+      // fallback not needed here
+    }
+  });
+}
+  const query = `
+    CREATE TABLE IF NOT EXISTS scenarios (
+      id TEXT PRIMARY KEY,
+      name TEXT NOT NULL,
+      vehicle_price REAL,
+      down_payment REAL,
+      loan_tenure REAL,
+      interest_rate REAL,
+      lump_sum REAL,
+      expected_return REAL,
+      swp_amount REAL,
+      swp_start_month INTEGER,
+      fund_type TEXT,
+      emi_start_month TEXT,
+      created_at TEXT
+    )
+  `;
+  db.run(query, (err) => {
+    if (err) {
+      console.error('Error creating SQLite tables. Switching to fallback.', err);
+      setupFallback();
+    }
+  });
 }
 
 function setupFallback() {
