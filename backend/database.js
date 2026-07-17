@@ -15,7 +15,7 @@ function initDb() {
   try {
     const sqlite3 = require('sqlite3').verbose();
     const dbPath = path.join(DB_DIR, 'car_loan_portal.db');
-    
+
     db = new sqlite3.Database(dbPath, (err) => {
       if (err) {
         console.error('Failed to connect to SQLite. Falling back to JSON file storage.', err);
@@ -73,7 +73,7 @@ function createTableSQLite() {
     }
   });
 }
-  const query = `
+const query = `
     CREATE TABLE IF NOT EXISTS scenarios (
       id TEXT PRIMARY KEY,
       name TEXT NOT NULL,
@@ -90,13 +90,13 @@ function createTableSQLite() {
       created_at TEXT
     )
   `;
-  db.run(query, (err) => {
-    if (err) {
-      console.error('Error creating SQLite tables. Switching to fallback.', err);
-      setupFallback();
-    }
-  });
-}
+db.run(query, (err) => {
+  if (err) {
+    console.error('Error creating SQLite tables. Switching to fallback.', err);
+    setupFallback();
+  }
+});
+
 
 function setupFallback() {
   useFallback = true;
@@ -185,7 +185,7 @@ function saveScenario(scenario) {
     db.run(query, [
       s.id, s.name, s.vehicle_price, s.down_payment, s.loan_tenure, s.interest_rate,
       s.lump_sum, s.expected_return, s.swp_amount, s.swp_start_month, s.fund_type, s.emi_start_month, s.created_at
-    ], function(err) {
+    ], function (err) {
       if (err) {
         console.error('SQLite Save Error:', err);
         return reject(err);
@@ -241,7 +241,7 @@ function deleteScenario(id) {
       return resolve(true);
     }
 
-    db.run(`DELETE FROM scenarios WHERE id = ?`, [id], function(err) {
+    db.run(`DELETE FROM scenarios WHERE id = ?`, [id], function (err) {
       if (err) {
         console.error('SQLite Delete Error:', err);
         return reject(err);
